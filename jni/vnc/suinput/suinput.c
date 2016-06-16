@@ -92,6 +92,11 @@ int suinput_open(const char* device_name, const struct input_id* id)
     if (ioctl(uinput_fd, UI_SET_EVBIT, EV_ABS) == -1)
         goto err;
 
+    /* Absolute pointer motions */
+
+    if (ioctl(uinput_fd, UI_SET_PROPBIT, 0x01) == -1)
+        goto err;
+
     /* Synchronization events, this is probably set implicitely too. */
     if (ioctl(uinput_fd, UI_SET_EVBIT, EV_SYN) == -1)
         goto err;
