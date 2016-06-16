@@ -57,7 +57,7 @@ static int fill_format(int format)
     };
     const int *p;
 
-    if (format == 0 || format > HAL_PIXEL_FORMAT_RGBA_4444)
+    if (format == 0 || format > 6)
         return -ENOTSUP;
 
     p = format_map[format];
@@ -93,11 +93,11 @@ int init_gralloc()
   
     CHECK_RV;
   
-    if (!fbdev->read) {
-        rv = -ENOTSUP;
-        close_gralloc();
-        return rv;
-    }
+    //if (!fbdev->read) {
+    //    rv = -ENOTSUP;
+    //    close_gralloc();
+    //    return rv;
+    //}
  
     rv = gralloc_open(&gralloc->common, &allocdev);
     
@@ -108,7 +108,7 @@ int init_gralloc()
                          &buf, &stride);
 
 
-    rv = fbdev->read(fbdev, buf);
+    //rv = fbdev->read(fbdev, buf);
 
     CHECK_RV;
     
@@ -161,7 +161,7 @@ unsigned char *readfb_gralloc ()
 {
     int rv;
 
-    rv = fbdev->read(fbdev, buf);
+    //rv = fbdev->read(fbdev, buf);
 
     CHECK_RV_P;
     

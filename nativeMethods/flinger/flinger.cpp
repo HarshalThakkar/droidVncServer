@@ -25,8 +25,8 @@
 #include <binder/IServiceManager.h>
 
 #include <binder/IMemory.h>
-#include <surfaceflinger/ISurfaceComposer.h>
-#include <surfaceflinger/SurfaceComposerClient.h>
+#include <gui/ISurfaceComposer.h>
+#include <gui/SurfaceComposerClient.h>
 
 using namespace android;
 
@@ -35,25 +35,25 @@ ScreenshotClient *screenshotClient=NULL;
 extern "C" screenFormat getscreenformat_flinger()
 {
   //get format on PixelFormat struct
-	PixelFormat f=screenshotClient->getFormat();
+//	PixelFormat f=screenshotClient->getFormat();
 
-	PixelFormatInfo pf;
-	getPixelFormatInfo(f,&pf);
+//	PixelFormatInfo pf;
+//	getPixelFormatInfo(f,&pf);
 
 	screenFormat format;
 
-	format.bitsPerPixel = pf.bitsPerPixel;
+	format.bitsPerPixel = 32;//pf.bitsPerPixel;
 	format.width = screenshotClient->getWidth();
-	format.height =     screenshotClient->getHeight();
-	format.size = pf.bitsPerPixel*format.width*format.height/CHAR_BIT;
-	format.redShift = pf.l_red;
-	format.redMax = pf.h_red;
-	format.greenShift = pf.l_green;
-	format.greenMax = pf.h_green-pf.h_red;
-	format.blueShift = pf.l_blue;
-	format.blueMax = pf.h_blue-pf.h_green;
-	format.alphaShift = pf.l_alpha;
-	format.alphaMax = pf.h_alpha-pf.h_blue;
+	format.height =  screenshotClient->getHeight();
+	format.size = format.bitsPerPixel*format.width*format.height/CHAR_BIT;
+	format.redShift = 0;
+	format.redMax = 8;
+	format.greenShift = 8;
+	format.greenMax = 8;
+	format.blueShift = 16;
+	format.blueMax = 8;
+	format.alphaShift = 24;
+	format.alphaMax = 8;
 
 	return format;
 }
@@ -63,10 +63,10 @@ extern "C" int init_flinger()
 {
 	int errno;
 
-	L("--Initializing gingerbread access method--\n");
+	//L("--Initializing gingerbread access method--\n");
 
   screenshotClient = new ScreenshotClient();
-	errno = screenshotClient->update();
+  errno = screenshotClient->update(SurfaceComposerClient::getBuiltInDisplay(0), Rect(), true);
   if (!screenshotClient->getPixels())
     return -1;
 
@@ -78,7 +78,7 @@ extern "C" int init_flinger()
 
 extern "C" unsigned int *readfb_flinger()
 {
-	screenshotClient->update();
+	screenshotClient->update(SurfaceComposerClient::getBuiltInDisplay(0), Rect(), true);
 	return (unsigned int*)screenshotClient->getPixels();
 }
 
